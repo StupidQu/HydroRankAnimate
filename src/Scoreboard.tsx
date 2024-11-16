@@ -134,9 +134,10 @@ const ScoreboardPlain = ({
 };
 
 export default function Scoreboard() {
+  const tid = window.localStorage.getItem('tid');
   const { data, loading, send } = useRequest(
     request.Get<{ rows: ScoreboardTd[][]; pdict: PDict }>(
-      `/contest/${import.meta.env.VITE_DATA_TID}/scoreboard`,
+      `/contest/${tid}/scoreboard`,
     ),
   );
   useEffect(() => {
@@ -145,7 +146,7 @@ export default function Scoreboard() {
       const { rows } = await request.Get<{
         rows: ScoreboardTd[][];
         pdict: PDict;
-      }>(`/contest/${import.meta.env.VITE_DATA_TID}/scoreboard`);
+      }>(`/contest/${tid}/scoreboard`);
       const oldRank = data.rows.map((i) => i[1].value);
       const newRank = rows.map((i) => i[1].value);
       if (JSON.stringify(rows) !== JSON.stringify(data.rows)) {

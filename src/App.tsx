@@ -4,7 +4,8 @@ import Scoreboard from './Scoreboard';
 export default function App() {
   const sid = window.localStorage.getItem('sid');
   const sidSig = window.localStorage.getItem('sid.sig');
-  if (!sid || !sidSig)
+  const tid = window.localStorage.getItem('tid');
+  if (!sid || !sidSig ||!tid)
     return (
       <div className="bg-black h-full min-h-screen w-screen">
         <div
@@ -17,6 +18,7 @@ export default function App() {
               type="text"
               name="sid"
               placeholder="sid"
+              defaultValue={sid || ''}
             />
             <br />
             <input
@@ -24,6 +26,15 @@ export default function App() {
               type="text"
               name="sid.sig"
               placeholder="sid.sig"
+              defaultValue={sidSig || ''}
+            />
+            <br />
+            <input
+              className="bg-black mt-2 text-white border-2 border-white p-2 w-96"
+              type="text"
+              name="tid"
+              placeholder="tid"
+              defaultValue={tid || ''}
             />
             <br />
             <input
@@ -39,8 +50,14 @@ export default function App() {
                     'input[name="sid.sig"]',
                   ) as HTMLInputElement
                 ).value;
+                const tid = (
+                  document.querySelector(
+                    'input[name="tid"]',
+                  ) as HTMLInputElement
+                ).value;
                 window.localStorage.setItem('sid', sid);
                 window.localStorage.setItem('sid.sig', sidSig);
+                window.localStorage.setItem('tid', tid);
                 window.location.reload();
               }}
               className="bg-black mt-2 text-white border-2 border-white p-2"
