@@ -133,6 +133,20 @@ const ScoreboardPlain = ({
   );
 };
 
+const BackToSelectButton = () => {
+  return (
+    <button
+      className="absolute bottom-2 right-2 z-50 bg-black text-white border-2 border-white p-2"
+      onClick={() => {
+        window.localStorage.removeItem('tid');
+        window.location.reload();
+      }}
+    >
+      重选比赛
+    </button>
+  );
+};
+
 export default function Scoreboard() {
   const tid = window.localStorage.getItem('tid');
   const { data, loading, send } = useRequest(
@@ -172,6 +186,7 @@ export default function Scoreboard() {
       {!loading && (
         <ScoreboardPlain rows={data.rows || []} pdict={data.pdict} />
       )}
+      <BackToSelectButton />
     </div>
   );
 }
