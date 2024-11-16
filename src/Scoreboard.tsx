@@ -89,7 +89,6 @@ const ScoreboardPlain = ({
   rows: ScoreboardTd[][];
   pdict: PDict;
 }) => {
-  console.log('Re-Render Scoreboard');
   return (
     <table className="w-full [&_td]:p-1 [&_th]:p-1 relative">
       <thead>
