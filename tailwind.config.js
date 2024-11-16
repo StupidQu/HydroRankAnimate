@@ -7,6 +7,7 @@ export default {
   theme: {
     borderWidth: {
       '1': '1px',
+      '2': '2px',
     },
     extend: {},
   },
