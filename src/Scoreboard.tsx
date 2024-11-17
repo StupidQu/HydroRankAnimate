@@ -1,6 +1,7 @@
 import './Scoreboard.css';
 
-import { PDict } from './lib/interface';
+import { PDict, UDict } from './lib/interface';
+
 import Score from './Score';
 import reactDOMServer from 'react-dom/server';
 import request from './lib/request';
@@ -43,7 +44,7 @@ type ScoreboardTd =
   | ScoreboardTdRecord
   | ScoreboardTdProblem;
 
-const TableTr = ({ tr, index }: { tr: ScoreboardTd[]; index: number }) => {
+const TableTr = ({ tr, index, udict }: { tr: ScoreboardTd[]; index: number; udict: UDict }) => {
   return (
     <tr
       id={tr[1].value.toString()}
@@ -61,7 +62,7 @@ const TableTr = ({ tr, index }: { tr: ScoreboardTd[]; index: number }) => {
           case 'user':
             return (
               <td className="border-1 grow" key="user">
-                {td.value}
+                {udict[td.raw].displayName}
               </td>
             );
           case 'total_score':
@@ -85,9 +86,11 @@ const TableTr = ({ tr, index }: { tr: ScoreboardTd[]; index: number }) => {
 const ScoreboardPlain = ({
   rows,
   pdict,
+  udict,
 }: {
   rows: ScoreboardTd[][];
   pdict: PDict;
+  udict: UDict;
 }) => {
   return (
     <table className="w-full [&_td]:p-1 [&_th]:p-1 relative">
@@ -126,7 +129,7 @@ const ScoreboardPlain = ({
       </thead>
       <tbody className="relative">
         {rows.slice(1).map((tr, index) => (
-          <TableTr tr={tr} index={index} key={tr[1].value} />
+          <TableTr udict={udict} tr={tr} index={index} key={tr[1].value} />
         ))}
       </tbody>
     </table>
@@ -150,19 +153,20 @@ const BackToSelectButton = () => {
 export default function Scoreboard() {
   const tid = window.localStorage.getItem('tid');
   const { data, loading, send } = useRequest(
-    request.Get<{ rows: ScoreboardTd[][]; pdict: PDict }>(
+    request.Get<{ rows: ScoreboardTd[][]; pdict: PDict; udict: UDict }>(
       `/contest/${tid}/scoreboard`,
     ),
     {
-      initialData: { rows: [[]], pdict: {} },
-    }
+      initialData: { rows: [[]], pdict: {}, udict: {} },
+    },
   );
   useEffect(() => {
     const i = setInterval(async () => {
       if (loading) return;
-      const { rows } = await request.Get<{
+      const { rows, udict } = await request.Get<{
         rows: ScoreboardTd[][];
         pdict: PDict;
+        udict: UDict;
       }>(`/contest/${tid}/scoreboard`);
       const oldRank = data.rows.map((i) => i[1].value);
       const newRank = rows.map((i) => i[1].value);
@@ -172,9 +176,15 @@ export default function Scoreboard() {
           const e = document.getElementById(uname.toString());
           if (!e) continue;
           e.innerHTML = reactDOMServer.renderToString(
-            <TableTr key={uname} tr={rows[newRank.indexOf(uname)]} index={newRank.indexOf(uname)} />,
+            <TableTr
+              key={uname}
+              tr={rows[newRank.indexOf(uname)]}
+              index={newRank.indexOf(uname)}
+              udict={udict}
+            />,
           );
-          if (newRank.indexOf(uname) < oldRank.indexOf(uname)) e.style.backgroundColor = '#b45309';
+          if (newRank.indexOf(uname) < oldRank.indexOf(uname))
+            e.style.backgroundColor = '#b45309';
           e.style.top = `${32 * (Number(newRank.indexOf(uname)) - 1)}px`;
         }
         setTimeout(() => {
@@ -186,7 +196,12 @@ export default function Scoreboard() {
   }, [data]);
   return (
     <div className="text-white mx-10">
-      <ScoreboardPlain key={JSON.stringify(data.rows)} rows={data.rows || []} pdict={data.pdict} />
+      <ScoreboardPlain
+        key={JSON.stringify(data.rows)}
+        rows={data.rows || []}
+        pdict={data.pdict}
+        udict={data.udict}
+      />
       <BackToSelectButton />
     </div>
   );
