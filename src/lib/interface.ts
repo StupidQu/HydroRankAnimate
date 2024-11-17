@@ -1,6 +1,7 @@
 export type TDoc = {
   docId: string;
   title: string;
+  pids: number[];
 }
 
 export type PDoc = {

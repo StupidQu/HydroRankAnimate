@@ -70,9 +70,12 @@ export default function App() {
     );
 
   return (
-    <div className="h-full min-h-screen w-screen bg-black">
-      <Header />
-      <Scoreboard />
+    <div>
+      <div className="-z-10 bg-neutral-900 h-full min-h-screen fixed top-0 w-full"></div>
+      <div className="absolute top-0 left-0 right-0 bottom-0">
+        <Header />
+        <Scoreboard />
+      </div>
     </div>
   );
 }
